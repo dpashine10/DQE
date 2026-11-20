@@ -1,18 +1,17 @@
 import pandas as pd
-import numpy as np
 
 def fillna_foracolumn(df, column, value):
     if column not in df.columns:
         raise ValueError(f"Column '{column}' does not exist in the DataFrame.")
     
     df_filled = df.copy()
-    df_filled[column].fillna(value, inplace=True)
+    df_filled[column] = df_filled[column].fillna(value)
     
     return df_filled
 
 def fillna_forallcols(df, value):
     df_filled = df.copy()
-    df_filled.fillna(value, inplace=True)
+    df_filled = df_filled.fillna(value)
     
     return df_filled
 
@@ -36,7 +35,7 @@ def replace_values(df, column, to_replace, value):
         raise ValueError(f"Column '{column}' does not exist in the DataFrame.")
     
     df_replaced = df.copy()
-    df_replaced[column].replace(to_replace, value, inplace=True)
+    df_replaced[column] = df_replaced[column].replace(to_replace, value)
     
     return df_replaced
 

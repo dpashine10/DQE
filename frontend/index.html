@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A calm workspace for auditing CSV files and approving safe data-quality changes."
+    />
+    <title>DataQualityEng — CSV audit workspace</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Primary navigation">
+        <a class="brand" href="#top" aria-label="DataQualityEng home">
+          <span class="brand-mark" aria-hidden="true">dq</span>
+          <span>
+            <strong>DataQuality</strong>
+            <small>engineering workspace</small>
+          </span>
+        </a>
+
+        <nav class="nav-list">
+          <a class="nav-item is-active" href="#overview">
+            <span class="nav-index">01</span>
+            <span>Overview</span>
+          </a>
+          <a class="nav-item" href="#audit">
+            <span class="nav-index">02</span>
+            <span>Audit runs</span>
+          </a>
+          <a class="nav-item" href="#plan">
+            <span class="nav-index">03</span>
+            <span>Agent plan</span>
+          </a>
+          <a class="nav-item" href="#preview">
+            <span class="nav-index">04</span>
+            <span>Data preview</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-note">
+          <span class="status-dot" aria-hidden="true"></span>
+          <div>
+            <strong>Local engine</strong>
+            <small>Ready for a CSV</small>
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          <span>v0.1 / local-first</span>
+          <span class="footer-rule" aria-hidden="true"></span>
+          <span>Audits before edits</span>
+        </div>
+      </aside>
+
+      <main id="top" class="main-content">
+        <header class="topbar">
+          <div class="breadcrumb"><span>Workspace</span><span>/</span><strong>Audit overview</strong></div>
+          <div class="topbar-actions">
+            <span class="engine-status"><span class="status-dot" aria-hidden="true"></span>Backend ready</span>
+            <button class="avatar" type="button" aria-label="Workspace menu">DQ</button>
+          </div>
+        </header>
+
+        <section id="overview" class="hero-section" aria-labelledby="page-title">
+          <div class="hero-copy">
+            <p class="eyebrow">CSV quality control / 01</p>
+            <h1 id="page-title">Make every dataset easier to trust.</h1>
+            <p class="hero-description">
+              Audit locally, see the evidence, then let the agent propose changes you can approve.
+            </p>
+            <div class="hero-meta" aria-label="Workflow summary">
+              <span>Deterministic audit</span>
+              <span>Human approval</span>
+              <span>Copy-safe cleaning</span>
+            </div>
+          </div>
+
+          <div class="hero-figure" aria-label="Audit workflow illustration">
+            <div class="figure-topline"><span>PIPELINE / READY</span><span>LOCAL</span></div>
+            <div class="figure-grid" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span class="grid-highlight"></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span class="grid-highlight"></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <div class="figure-caption"><strong>01</strong><span>ingest → inspect → propose</span></div>
+          </div>
+        </section>
+
+        <section id="audit" class="workspace-section" aria-labelledby="audit-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Start with a file</p>
+              <h2 id="audit-title">Bring a CSV into the workspace.</h2>
+            </div>
+            <p class="section-intro">Your original stays untouched. The graph profiles the columns and keeps a local value catalog before planning fixes.</p>
+          </div>
+
+          <div class="ingest-layout">
+            <div class="drop-zone" id="drop-zone" tabindex="0" role="button" aria-label="Choose a CSV file">
+              <input id="file-input" type="file" accept=".csv,text/csv" />
+              <div class="upload-symbol" aria-hidden="true">+</div>
+              <div class="drop-copy">
+                <strong>Drop your CSV here</strong>
+                <span>or choose a file from your computer</span>
+              </div>
+              <button class="button button-dark" id="choose-file" type="button">Choose CSV</button>
+               <small class="file-hint">CSV only · up to 512 MiB · 1,000,000 rows · 500 columns · 10 million cells</small>
+            </div>
+
+            <div class="sample-panel">
+              <div class="panel-kicker">Want to see it move?</div>
+              <h3>Use the included sales sample.</h3>
+              <p>Load a small example and watch the audit surface the same signals your backend checks.</p>
+              <button class="button button-light" id="sample-file" type="button">Load sample CSV <span aria-hidden="true">↗</span></button>
+              <div class="mini-file"><span class="file-badge">CSV</span><span>sales_mock.csv</span><span>100 rows</span></div>
+            </div>
+          </div>
+
+          <div class="file-status" id="file-status" role="status" aria-live="polite">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>No file selected yet. Add a CSV to start an audit.</span>
+          </div>
+        </section>
+
+        <section class="metrics-section" aria-label="Audit summary">
+          <div class="metric-card metric-score">
+            <span class="metric-label">Quality score</span>
+            <strong id="score-value">—</strong>
+            <span id="score-note">Waiting for a file</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Rows scanned</span>
+            <strong id="row-count">—</strong>
+            <span>records in source</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Columns found</span>
+            <strong id="column-count">—</strong>
+            <span>fields in source</span>
+          </div>
+          <div class="metric-card metric-issue">
+            <span class="metric-label">Signals found</span>
+            <strong id="issue-count">—</strong>
+            <span>needs review</span>
+          </div>
+        </section>
+
+        <section class="health-section" aria-labelledby="health-title">
+          <div class="health-heading">
+            <div>
+              <p class="eyebrow">Quality dimensions</p>
+              <h2 id="health-title">See where trust breaks.</h2>
+            </div>
+            <span class="preview-note">Scores are row-based</span>
+          </div>
+          <div class="health-grid" id="health-grid">
+            <div class="health-card"><span>Completeness</span><strong>—</strong><small>Awaiting audit</small></div>
+            <div class="health-card"><span>Validity</span><strong>—</strong><small>Awaiting audit</small></div>
+            <div class="health-card"><span>Consistency</span><strong>—</strong><small>Awaiting audit</small></div>
+            <div class="health-card"><span>Uniqueness</span><strong>—</strong><small>Awaiting audit</small></div>
+          </div>
+        </section>
+
+        <section id="plan" class="plan-section" aria-labelledby="plan-title">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="eyebrow">Agent workspace / 02</p>
+              <h2 id="plan-title">Evidence first. Choose the fixes.</h2>
+            </div>
+            <div class="plan-actions">
+              <button class="button button-light" id="download-report" type="button" disabled>Download report</button>
+              <button class="button button-outline" id="preview-cleaning" type="button" disabled>Preview impact</button>
+              <button class="button button-accent" id="download-cleaned" type="button" disabled>Approve &amp; download cleaned CSV</button>
+            </div>
+          </div>
+
+          <div class="plan-layout">
+            <div class="issues-panel">
+              <div class="panel-header"><span>Audit signals</span><span id="issue-summary">No audit yet</span></div>
+              <div class="summary-bar">
+                <p class="agent-summary" id="agent-summary">Upload a CSV. The backend will profile it, audit it, and build a validated plan.</p>
+                <button class="button button-outline" id="summary-button" type="button" disabled>Ask agent for summary</button>
+              </div>
+              <div class="summary-source" id="summary-source">Deterministic summary appears here after an audit.</div>
+              <div class="issue-toolbar" aria-label="Filter audit signals">
+                <span>Show</span>
+                <button class="filter-button is-active" type="button" data-filter="all">All</button>
+                <button class="filter-button" type="button" data-filter="recommended">Recommended</button>
+                <button class="filter-button" type="button" data-filter="nothing">Nothing</button>
+                <button class="filter-button" type="button" data-filter="not_recommended">Not recommended</button>
+              </div>
+               <div id="issues-list" class="issues-list">
+                <div class="empty-state"><span class="empty-line"></span><strong>Your audit signals will appear here.</strong><span>Select a CSV above to inspect missing values, duplicates, and outliers.</span></div>
+              </div>
+              <div class="plan-callout">
+                <div class="panel-header"><span>Validated actions</span><span id="plan-summary">No plan yet</span></div>
+                <div class="selection-toolbar">
+                  <button class="button button-tiny button-outline" id="select-recommended" type="button" disabled>Select recommended</button>
+                  <button class="button button-tiny button-outline" id="clear-selection" type="button" disabled>Clear selection</button>
+                </div>
+                <div id="plan-list" class="plan-list"><span class="plan-empty">Actions proposed after the audit will appear here.</span></div>
+              </div>
+            </div>
+
+            <div class="activity-panel">
+              <div class="panel-header"><span>Tool activity</span><span class="live-label"><span class="status-dot" aria-hidden="true"></span>live</span></div>
+              <ol class="activity-list" id="activity-list">
+                <li class="activity-item is-current" data-step="load"><span class="activity-marker">01</span><div><strong>Waiting for input</strong><small>Upload a CSV to begin.</small></div></li>
+                <li class="activity-item" data-step="profile"><span class="activity-marker">02</span><div><strong>Profile the dataset</strong><small>Read types, missingness, and distributions.</small></div></li>
+                <li class="activity-item" data-step="audit"><span class="activity-marker">03</span><div><strong>Run deterministic audit</strong><small>Find measurable quality signals.</small></div></li>
+                <li class="activity-item" data-step="plan"><span class="activity-marker">04</span><div><strong>Build a validated plan</strong><small>LangChain proposes; Python validates.</small></div></li>
+                <li class="activity-item" data-step="complete"><span class="activity-marker">05</span><div><strong>Approve and export</strong><small>Write a copy, never the source.</small></div></li>
+              </ol>
+            </div>
+          </div>
+        </section>
+
+        <section id="preview" class="preview-section" aria-labelledby="preview-title">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="eyebrow">Source snapshot / 03</p>
+              <h2 id="preview-title">A small window into the data.</h2>
+            </div>
+            <span class="preview-note" id="preview-note">Preview is limited to five rows.</span>
+          </div>
+          <div class="table-shell">
+            <div class="table-toolbar"><span id="table-file-name">No CSV loaded</span><span>Read-only preview</span></div>
+            <div class="table-scroll">
+              <table>
+                <thead id="preview-head"><tr><th>Upload a file to preview columns</th></tr></thead>
+                <tbody id="preview-body"><tr><td class="table-empty">Your first five records will show up here.</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="notebook-lab" class="notebook-section" aria-labelledby="notebook-title">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="eyebrow">Notebook lab / 04</p>
+              <h2 id="notebook-title">Turn this dataset into a starting point.</h2>
+            </div>
+            <span class="preview-note">Generated, never executed</span>
+          </div>
+          <div class="notebook-layout">
+            <div class="notebook-prompt-panel">
+              <label for="notebook-request">Tell the agents what you want to explore</label>
+              <textarea id="notebook-request" rows="4" placeholder="Create an ipynb file for training a Regression model on this dataset."></textarea>
+              <div class="prompt-examples" aria-label="Example notebook requests">
+                <button class="prompt-chip" type="button" data-prompt="Create an exploratory notebook with bar charts and a correlation heatmap.">Explore + heatmap</button>
+                <button class="prompt-chip" type="button" data-prompt="Create an ipynb file for training a Regression model on this dataset.">Regression model</button>
+                <button class="prompt-chip" type="button" data-prompt="Create an XGBoost classification notebook and explain the target and features.">XGBoost classification</button>
+              </div>
+              <button class="button button-dark" id="generate-notebook" type="button" disabled>Generate notebook</button>
+              <small class="notebook-note">The research, insights, and code agents write cells for you. DataQualityEng never runs the generated code.</small>
+            </div>
+            <div class="notebook-result" id="notebook-result" aria-live="polite">
+              <div class="notebook-empty"><span class="notebook-icon" aria-hidden="true">ipynb</span><strong>No notebook yet.</strong><span>Upload a CSV, describe the plot or model, and download a ready-to-review Jupyter notebook.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <footer class="page-footer">
+          <span>DataQualityEng / local-first CSV auditing</span>
+          <span>Original data stays yours.</span>
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,10 +1,25 @@
 [project]
 name = "dataqualityeng"
 version = "0.1.0"
-description = "Add your description here"
+description = "Local-first CSV data-quality auditing and conservative cleaning"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "fastapi>=0.115",
+    "uvicorn>=0.34",
+    "python-multipart>=0.0.20",
+    "python-dotenv>=1.1",
+    "langchain>=1.0,<2",
+    "langchain-openai>=1.0,<2",
+    "langgraph>=1.0,<2",
+    "langgraph-checkpoint-sqlite>=3.0,<4",
+    "nbformat>=5.10",
     "numpy>=2.5.3",
     "pandas>=3.0.6",
+    "matplotlib>=3.11.2",
+    "seaborn>=0.13.2",
+    "scikit-learn>=1.9.1",
 ]
+
+[dependency-groups]
+dev = ["httpx>=0.28"]

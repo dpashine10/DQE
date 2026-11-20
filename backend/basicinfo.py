@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 def get_basic_info(df):
     info = {
@@ -17,7 +16,7 @@ def get_summary_statistics(df):
     return summary_stats
 
 def get_correlation_matrix(df):
-    correlation_matrix = df.corr().to_dict()
+    correlation_matrix = df.corr(numeric_only=True).to_dict()
     return correlation_matrix
 
 def get_value_counts(df, column):
@@ -37,4 +36,3 @@ def get_unique_values(df, column):
         return unique_values
     else:
         raise ValueError(f"Column '{column}' does not exist in the DataFrame.")
-

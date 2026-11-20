@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 def mean(df, column):
     if column not in df.columns:

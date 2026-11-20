@@ -1,0 +1,12 @@
+id,name,age,price,quantity,event_date,email,city,status,notes,constant
+1,Alice,29,10.50,2,2024-01-01,alice@example.com,Mumbai,active,ok,always
+2," Bob ",?,-5,3,not-a-date,bad-email,Mumabi,ACTIVE,? ,always
+2," Bob ",?,-5,3,not-a-date,bad-email,Mumabi,ACTIVE,? ,always
+3,Charlie,200,abc,ten,1899-01-01,charlie@example,Delhi,active,ok,always
+4,Dana,five,1000000,-2,2099-12-01,dana@example.com,Delhi,Active,ok,always
+5,Eve,31,11.0,2,2024-05-01,eve@example.com,delhi,active,ok,always
+6,,32,null,3,2024-06-01,eve@example.com,Mumbai,active,ok,always
+7,Frank,33,12.0,3,2024-06-02,frank@example.com,Mumbai,active,ok,always
+8,Gina,34,13.0,999,2024-06-03,gina@example.com,North,active,ok,always
+9,Henry,?,14.0,3,2024-06-04,henry@example.com,North,active,ok,always
+10,Ian,35,15.0,3,2024-06-05,ian@example.com,North,active,ok,always

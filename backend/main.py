@@ -4,9 +4,12 @@ import argparse
 import json
 from pathlib import Path
 
-import pandas as pd
-
-from dataquality import apply_recommendations, audit_dataframe, report_text
+try:
+    from .csv_io import read_csv
+    from .dataquality import apply_recommendations, audit_dataframe, report_text, summary_text
+except ImportError:  # Support ``python backend/main.py`` as well as ``python -m backend.main``.
+    from csv_io import read_csv
+    from dataquality import apply_recommendations, audit_dataframe, report_text, summary_text
 
 
 def main() -> None:
@@ -15,29 +18,32 @@ def main() -> None:
     parser.add_argument("--apply", action="store_true", help="Apply every validated recommendation")
     parser.add_argument("--output", type=Path, help="Output CSV path when --apply is used")
     parser.add_argument("--llm", action="store_true", help="Ask the LLM for a structured cleaning plan")
-    parser.add_argument("--summary", action="store_true", help="Ask the configured LLM for a plain-language summary")
+    parser.add_argument("--summary", action="store_true", help="Print a plain-language summary without needing the frontend or an LLM")
     args = parser.parse_args()
 
-    frame = pd.read_csv(args.csv)
+    frame = read_csv(args.csv)
     report = audit_dataframe(frame)
     print(json.dumps(report, indent=2, default=str))
     print(report_text(report))
 
     recommendations = report["recommendations"]
     if args.llm:
-        from LLMtools import generate_cleaning_plan
+        try:
+            from .LLMtools import generate_cleaning_plan
+        except ImportError:
+            from LLMtools import generate_cleaning_plan
 
         recommendations = generate_cleaning_plan(frame, report)
         print("\nLLM cleaning plan:\n" + json.dumps(recommendations, indent=2, default=str))
 
     if args.summary:
-        from LLMtools import generatesummary
-
-        print("\nLLM summary:\n" + generatesummary(report_text(report)))
+        print("\nSummary:\n" + summary_text(report))
 
     if args.apply:
         output = args.output or args.csv.with_name(f"{args.csv.stem}.cleaned.csv")
-        cleaned = apply_recommendations(frame, recommendations, approved=True)
+        approved_recommendations = [recommendation for recommendation in recommendations
+                                    if recommendation.get("decision", "recommended") == "recommended"]
+        cleaned = apply_recommendations(frame, approved_recommendations, approved=True)
         cleaned.to_csv(output, index=False)
         print(f"Cleaned CSV written to {output}")
 
